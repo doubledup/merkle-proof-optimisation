@@ -1,2 +1,3 @@
-solmate-utils/=lib/solmate/src/utils/
 openzeppelin/=lib/openzeppelin-contracts/contracts/
+snowbridge/=lib/snowbridge/core/packages/contracts/contracts/
+solmate-utils/=lib/solmate/src/utils/
