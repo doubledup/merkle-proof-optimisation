@@ -1,0 +1,3 @@
+MerkleProofTest:testOptimisedProof() (gas: 14077)
+MerkleProofTest:testUnoptimisedProofLengthIndex() (gas: 18912)
+MerkleProofTest:testUnoptimisedProofSidesArray() (gas: 18782)
