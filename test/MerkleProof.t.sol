@@ -7,11 +7,11 @@ import { MerkleProof as SnowbridgeMerkleProof } from "snowbridge/utils/MerklePro
 import { MerkleProof as OpenZeppelinMerkleProof } from "openzeppelin/utils/cryptography/MerkleProof.sol";
 
 contract MerkleProofTest is Test {
-    bytes[] public leaves;
-    bytes32 public hashedLeaf;
-    bytes32[] public proof;
+    bytes[] leaves;
+    bytes32 hashedLeaf;
+    bytes32[] proof;
 
-    function setUp() public {
+    function setUp() external {
         leaves = [
             bytes(hex"0102030405"),
             bytes(hex"060708090A"),
@@ -26,7 +26,7 @@ contract MerkleProofTest is Test {
         proof[1] = bytes32(hex"dc98d1099d7ebc2ae6c7c780c218917d5061beccbdb2ac05bc68e7b8bcc39555");
     }
 
-    function testUnoptimisedProofLengthIndex() public {
+    function testUnoptimisedProofLengthIndex() external {
         bytes32 expectedRoot = hex"d594f06a7365bfe1d7ff0d436cb4b5a31a453c0f857ff6412695c5df48097f1b";
 
         bytes32 computedRoot = SnowbridgeMerkleProof.computeRootFromProofAtPosition(
@@ -44,7 +44,7 @@ contract MerkleProofTest is Test {
         assertEq(computedRoot, expectedRoot);
     }
 
-    function testUnoptimisedProofSidesArray() public {
+    function testUnoptimisedProofSidesArray() external {
         bytes32 expectedRoot = hex"d594f06a7365bfe1d7ff0d436cb4b5a31a453c0f857ff6412695c5df48097f1b";
         bool[] memory sides = new bool[](2);
         sides[0] = false;
@@ -64,7 +64,7 @@ contract MerkleProofTest is Test {
         assertEq(computedRoot, expectedRoot);
     }
 
-    function testOptimisedProof() public {
+    function testOptimisedProof() external {
         bytes32 expectedRoot = hex"03877141142e4d3fa214041fb5125f2ea61a88db793b5c063cf98910619e0b54";
 
         bytes32 computedRoot = OpenZeppelinMerkleProof.processProof(
