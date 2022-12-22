@@ -1,0 +1,10 @@
+{
+  "extends": "@tsconfig/node18-strictest/tsconfig.json",
+  "compilerOptions": {
+    "lib": ["dom", "es2022"],
+    "outDir": "dist",
+    "rootDir": "src/",
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts"]
+}
