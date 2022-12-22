@@ -1,5 +1,6 @@
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import prettier from "prettier";
+import { NoSortMerkleTree } from "./no-sort";
 
 const values = [
   ["0x1111111111111111111111111111111111111111"],
@@ -19,8 +20,14 @@ const values = [
   ["0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"],
 ];
 
-const tree = StandardMerkleTree.of(values, ["address"]);
+const standardTree = StandardMerkleTree.of(values, ["address"]);
+console.log("Standard Merkle Root:", standardTree.root);
+console.log(
+  prettier.format(JSON.stringify(standardTree.dump()), { parser: "json" })
+);
 
-console.log("Merkle Root:", tree.root);
-
-console.log(prettier.format(JSON.stringify(tree.dump()), { parser: "json" }));
+const noSortTree = NoSortMerkleTree.of(values, ["address"]);
+console.log("Unsorted Merkle Root:", noSortTree.root);
+console.log(
+  prettier.format(JSON.stringify(noSortTree.dump()), { parser: "json" })
+);
