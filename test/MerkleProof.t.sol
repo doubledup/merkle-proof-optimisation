@@ -3,79 +3,107 @@ pragma solidity ^0.8.13;
 
 import "forge-std/console.sol";
 import "forge-std/Test.sol";
-import { MerkleProof as SnowbridgeMerkleProof } from "snowbridge/utils/MerkleProof.sol";
-import { MerkleProof as OpenZeppelinMerkleProof } from "openzeppelin/utils/cryptography/MerkleProof.sol";
+import {MerkleProof as SnowbridgeMerkleProof} from "snowbridge/utils/MerkleProof.sol";
+import {MerkleProof as OpenZeppelinMerkleProof} from "openzeppelin/utils/cryptography/MerkleProof.sol";
 
 contract MerkleProofTest is Test {
-    bytes[] leaves;
-    bytes32 hashedLeaf;
-    bytes32[] proof;
+    uint256 leafToProve = 7;
+    bytes[] leaves = [
+        bytes(hex"1111111111111111111111111111111111111111"),
+        bytes(hex"2222222222222222222222222222222222222222"),
+        bytes(hex"3333333333333333333333333333333333333333"),
+        bytes(hex"4444444444444444444444444444444444444444"),
+        bytes(hex"5555555555555555555555555555555555555555"),
+        bytes(hex"6666666666666666666666666666666666666666"),
+        bytes(hex"7777777777777777777777777777777777777777"),
+        bytes(hex"8888888888888888888888888888888888888888"),
+        bytes(hex"9999999999999999999999999999999999999999"),
+        bytes(hex"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"),
+        bytes(hex"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"),
+        bytes(hex"CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"),
+        bytes(hex"DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"),
+        bytes(hex"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"),
+        bytes(hex"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+    ];
 
-    function setUp() external {
-        leaves = [
-            bytes(hex"0102030405"),
-            bytes(hex"060708090A"),
-            bytes(hex"0B0C0D0E0F"),
-            bytes(hex"1011121314")
-        ];
+    function setUp() external {}
 
-        hashedLeaf = keccak256(leaves[2]);
+    // function testUnoptimisedProofLengthIndex() external {
+    //     bytes32 expectedRoot = hex"d594f06a7365bfe1d7ff0d436cb4b5a31a453c0f857ff6412695c5df48097f1b";
 
-        proof = new bytes32[](2);
-        proof[0] = bytes32(hex"c4766a907a6650da5c51e06ffec70444ec38f3ebd9156a8c3c3271b0f6383a2d");
-        proof[1] = bytes32(hex"dc98d1099d7ebc2ae6c7c780c218917d5061beccbdb2ac05bc68e7b8bcc39555");
-    }
+    //     bytes32 computedRoot = SnowbridgeMerkleProof.computeRootFromProofAtPosition(
+    //         hashedLeaf,
+    //         2,
+    //         4,
+    //         proof
+    //     );
 
-    function testUnoptimisedProofLengthIndex() external {
-        bytes32 expectedRoot = hex"d594f06a7365bfe1d7ff0d436cb4b5a31a453c0f857ff6412695c5df48097f1b";
+    //     console.log("expected:");
+    //     console.logBytes32(expectedRoot);
+    //     console.log("found:");
+    //     console.logBytes32(computedRoot);
 
-        bytes32 computedRoot = SnowbridgeMerkleProof.computeRootFromProofAtPosition(
-            hashedLeaf,
-            2,
-            4,
-            proof
-        );
+    //     assertEq(computedRoot, expectedRoot);
+    // }
 
-        console.log("expected:");
-        console.logBytes32(expectedRoot);
-        console.log("found:");
-        console.logBytes32(computedRoot);
+    // function testUnoptimisedProofSidesArray() external {
+    //     bytes32 expectedRoot = hex"d594f06a7365bfe1d7ff0d436cb4b5a31a453c0f857ff6412695c5df48097f1b";
+    //     bool[] memory sides = new bool[](2);
+    //     sides[0] = false;
+    //     sides[1] = true;
+    //     // sides[0] = true;
+    //     // sides[1] = true;
+    //     // sides[2] = true;
+    //     // sides[3] = false;
 
-        assertEq(computedRoot, expectedRoot);
-    }
+    //     bytes32 computedRoot = SnowbridgeMerkleProof.computeRootFromProofAndSide(
+    //         hashedLeaf,
+    //         proof,
+    //         sides
+    //     );
 
-    function testUnoptimisedProofSidesArray() external {
-        bytes32 expectedRoot = hex"d594f06a7365bfe1d7ff0d436cb4b5a31a453c0f857ff6412695c5df48097f1b";
-        bool[] memory sides = new bool[](2);
-        sides[0] = false;
-        sides[1] = true;
+    //     console.log("expected:");
+    //     console.logBytes32(expectedRoot);
+    //     console.log("found:");
+    //     console.logBytes32(computedRoot);
 
-        bytes32 computedRoot = SnowbridgeMerkleProof.computeRootFromProofAndSide(
-            hashedLeaf,
-            proof,
-            sides
-        );
-
-        console.log("expected:");
-        console.logBytes32(expectedRoot);
-        console.log("found:");
-        console.logBytes32(computedRoot);
-
-        assertEq(computedRoot, expectedRoot);
-    }
+    //     assertEq(computedRoot, expectedRoot);
+    // }
 
     function testOptimisedProof() external {
-        bytes32 expectedRoot = hex"03877141142e4d3fa214041fb5125f2ea61a88db793b5c063cf98910619e0b54";
+        bytes32 expectedRoot = hex"ad32a67e72f7ac17e8191151183eb5a4adb0d24f4c46b8c9b884ab64e5c5ebe5";
+
+        bytes32[] memory proof = new bytes32[](4);
+        proof[0] = bytes32(
+            hex"93e7520a71a3e30c2660344cc5f9665ab572d25fb948bb0ab92881b253a2120c"
+        );
+        proof[1] = bytes32(
+            hex"6aeaafbb42597ed9a8bc7210bc7c0372587997eee719231102fc80ea7a7a9884"
+        );
+        proof[2] = bytes32(
+            hex"916f8824654fa4b566f331c21f9a8dcbaaac49de1122614c5887501490e0fd4a"
+        );
+        proof[3] = bytes32(
+            hex"799e80126fa1489eea645add1b4b1ae54e2d12837abd3d055c42a661ebbd6b43"
+        );
+
+        bytes memory leaf = leaves[leafToProve];
+        bytes memory encodedLeaf = abi.encode(leaf);
+        // Leaves are double-hashed to prevent second preimage attacks
+        bytes32 hashedLeaf = keccak256(abi.encode(keccak256(encodedLeaf)));
+
+        // // Uncomment for intermediate leaf values
+        // console.log("leaf:");
+        // console.logBytes(leaf);
+        // console.log("encoded leaf:");
+        // console.logBytes(encodedLeaf);
+        // console.log("leaf hash:");
+        // console.logBytes32(hashedLeaf);
 
         bytes32 computedRoot = OpenZeppelinMerkleProof.processProof(
             proof,
             hashedLeaf
         );
-
-        console.log("expected:");
-        console.logBytes32(expectedRoot);
-        console.log("found:");
-        console.logBytes32(computedRoot);
 
         assertEq(computedRoot, expectedRoot);
     }

@@ -8,7 +8,7 @@ import {
 import { defaultAbiCoder } from "@ethersproject/abi";
 
 export const NoSortMerkleTree = {
-  of: function<T extends unknown[]>(
+  of: function <T extends unknown[]>(
     values: T[],
     leafEncoding: string[]
   ): StandardMerkleTree<T> {
@@ -17,6 +17,8 @@ export const NoSortMerkleTree = {
       valueIndex,
       hash: standardLeafHash(value, leafEncoding),
     }));
+    // Don't sort hashes before combining them, unlike StandardMerkleTree
+    // .sort((a, b) => compareBytes(a.hash, b.hash));
 
     const tree = makeMerkleTree(hashedValues.map((v) => v.hash));
 
@@ -32,14 +34,18 @@ export const NoSortMerkleTree = {
       leafEncoding,
       format: "standard-v1",
     });
-  }
-}
+  },
+};
 
 function standardLeafHash<T extends unknown[]>(
   value: T,
   types: string[]
 ): Bytes {
   return keccak256(keccak256(hexToBytes(defaultAbiCoder.encode(types, value))));
+}
+
+export function doubleHash(bytes: string): string {
+  return bytesToHex(keccak256(keccak256(hexToBytes(bytes))));
 }
 
 type Bytes = Uint8Array;
