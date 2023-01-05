@@ -28,23 +28,39 @@ contract MerkleProofTest is Test {
 
     function setUp() external {}
 
-    // function testUnoptimisedProofLengthIndex() external {
-    //     bytes32 expectedRoot = hex"d594f06a7365bfe1d7ff0d436cb4b5a31a453c0f857ff6412695c5df48097f1b";
+    function testUnoptimisedProofLengthIndex() external {
+        bytes32 expectedRoot = hex"fbb6cc6fd78fdd7cb5562d39c5f94901939ea9dc4c871f45cc11d9e21a671d99";
+        bytes32 hashedLeaf = hashLeaf(leaves[leafToProve]);
 
-    //     bytes32 computedRoot = SnowbridgeMerkleProof.computeRootFromProofAtPosition(
-    //         hashedLeaf,
-    //         2,
-    //         4,
-    //         proof
-    //     );
+        bytes32[] memory proof = new bytes32[](4);
+        proof[0] = bytes32(
+            hex"53b667c38e558c13f86d824c3366eedf521828786b9c41beac4b60e6c505bf84"
+        );
+        proof[1] = bytes32(
+            hex"d52a9257f9ebd335b1baa6874847506c10769b6f317008990d5816740b9bc86d"
+        );
+        proof[2] = bytes32(
+            hex"a4169a2ec950c558b0303388712e25514b0afb64a8ad3f26343de8ffcc6cc15b"
+        );
+        proof[3] = bytes32(
+            hex"eded545778aa005e2ae57f44cbaa4b8895599974682dbbdfa71827fe974b089f"
+        );
 
-    //     console.log("expected:");
-    //     console.logBytes32(expectedRoot);
-    //     console.log("found:");
-    //     console.logBytes32(computedRoot);
+        bytes32 computedRoot = SnowbridgeMerkleProof
+            .computeRootFromProofAtPosition(
+                hashedLeaf,
+                leafToProve,
+                leaves.length,
+                proof
+            );
 
-    //     assertEq(computedRoot, expectedRoot);
-    // }
+        console.log("expected:");
+        console.logBytes32(expectedRoot);
+        console.log("found:");
+        console.logBytes32(computedRoot);
+
+        assertEq(computedRoot, expectedRoot);
+    }
 
     // function testUnoptimisedProofSidesArray() external {
     //     bytes32 expectedRoot = hex"d594f06a7365bfe1d7ff0d436cb4b5a31a453c0f857ff6412695c5df48097f1b";
@@ -87,11 +103,6 @@ contract MerkleProofTest is Test {
             hex"799e80126fa1489eea645add1b4b1ae54e2d12837abd3d055c42a661ebbd6b43"
         );
 
-        bytes memory leaf = leaves[leafToProve];
-        bytes memory encodedLeaf = abi.encode(leaf);
-        // Leaves are double-hashed to prevent second preimage attacks
-        bytes32 hashedLeaf = keccak256(abi.encode(keccak256(encodedLeaf)));
-
         // // Uncomment for intermediate leaf values
         // console.log("leaf:");
         // console.logBytes(leaf);
@@ -100,11 +111,19 @@ contract MerkleProofTest is Test {
         // console.log("leaf hash:");
         // console.logBytes32(hashedLeaf);
 
+        bytes32 hashedLeaf = hashLeaf(leaves[leafToProve]);
+
         bytes32 computedRoot = OpenZeppelinMerkleProof.processProof(
             proof,
             hashedLeaf
         );
 
         assertEq(computedRoot, expectedRoot);
+    }
+
+    function hashLeaf(bytes storage leaf) private returns (bytes32) {
+        bytes memory encodedLeaf = abi.encode(leaf);
+        // Leaves are double-hashed to prevent second preimage attacks
+        return keccak256(abi.encode(keccak256(encodedLeaf)));
     }
 }

@@ -1,8 +1,9 @@
-import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
+import type { StandardMerkleTree } from "@openzeppelin/merkle-tree";
+// import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import prettier from "prettier";
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { doubleHash } from "./no-sort";
-// import { NoSortMerkleTree } from "./no-sort";
+import { NoSortMerkleTree } from "./no-sort";
 
 const leafNumber = 7;
 // each value must be an array because of the types used in StandardMerkleTree
@@ -26,10 +27,10 @@ const leaves = [
 
 console.log(`Proving leaf ${leafNumber} of ${leaves.length}\n`);
 
-console.log("Standard Merkle tree:");
-printTestData(StandardMerkleTree.of(leaves, ["bytes"]), leafNumber);
-// console.log('Unoptimised Merkle tree');
-// printTestData(NoSortMerkleTree.of(leaves, ["address"]), leafNumber);
+// console.log("Standard Merkle tree:");
+// printTestData(StandardMerkleTree.of(leaves, ["bytes"]), leafNumber);
+console.log('Unoptimised Merkle tree');
+printTestData(NoSortMerkleTree.of(leaves, ["bytes"]), leafNumber);
 
 function printTestData<T extends unknown[]>(
   tree: StandardMerkleTree<T>,
@@ -67,13 +68,13 @@ function printTestData<T extends unknown[]>(
 
   console.log(`Tree:\n${tree.render()}`.trim());
 
-  // // Uncomment this to see the leaf hashes in original order
-  // const leafHashes = treeData.values.map((v) => treeData.tree[v.treeIndex]);
-  // console.log(
-  //   `Leaves: ${prettier.format(JSON.stringify(leafHashes), {
-  //     parser: "json",
-  //   })}`.trim()
-  // );
+  // Uncomment this to see the leaf hashes in original order
+  const leafHashes = treeData.values.map((v) => treeData.tree[v.treeIndex]);
+  console.log(
+    `Leaves: ${prettier.format(JSON.stringify(leafHashes), {
+      parser: "json",
+    })}`.trim()
+  );
 
   // // Uncomment this to see the full StandardMerkleTree
   // console.log(
