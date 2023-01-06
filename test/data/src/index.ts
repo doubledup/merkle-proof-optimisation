@@ -24,14 +24,15 @@ const leaves = [
   ["0x0000000000000000000000000000000000000000000000000000000000000014"],
   ["0x0000000000000000000000000000000000000000000000000000000000000015"],
 ];
+const leafEncoding = ["bytes"];
 
 console.log(`Proving leaf ${leafNumber} of ${leaves.length}\n`);
 
 console.log("Optimised Merkle tree:");
-printTestData(StandardMerkleTree.of(leaves, ["bytes"]), leafNumber);
+printTestData(StandardMerkleTree.of(leaves, leafEncoding), leafNumber);
 console.log();
 console.log("Unoptimised Merkle tree");
-printTestData(NoSortMerkleTree.of(leaves, ["bytes"]), leafNumber);
+printTestData(NoSortMerkleTree.of(leaves, leafEncoding), leafNumber);
 
 function printTestData<T extends unknown[]>(
   tree: StandardMerkleTree<T>,
@@ -51,7 +52,7 @@ function printTestData<T extends unknown[]>(
     };
 
     console.log(`Raw leaf: ${JSON.stringify(leaf.value)}`);
-    const encodedLeaf = defaultAbiCoder.encode(["bytes"], leaf.value);
+    const encodedLeaf = defaultAbiCoder.encode(leafEncoding, leaf.value);
     console.log(`Encoded leaf: ${encodedLeaf}`);
     console.log(`Hashed leaf: ${doubleHash(encodedLeaf)}`);
 
