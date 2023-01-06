@@ -128,6 +128,7 @@ function throwError(message?: string): never {
   throw new Error(message);
 }
 
+// Remove validation as this would have to determine the order in which hashes are combined
 // function processProof(leaf: Bytes, proof: Bytes[]): Bytes {
 //   checkValidMerkleNode(leaf);
 //   proof.forEach(checkValidMerkleNode);
