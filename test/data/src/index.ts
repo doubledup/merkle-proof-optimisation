@@ -4,7 +4,7 @@ import { defaultAbiCoder } from "@ethersproject/abi";
 import { doubleHash } from "./no-sort";
 import { NoSortMerkleTree } from "./no-sort";
 
-const leafNumber = 12;
+const leafIndex = 12;
 // each value must be an array because of the types used in StandardMerkleTree
 const leaves = [
   ["0x0000000000000000000000000000000000000000000000000000000000000000"],
@@ -26,22 +26,22 @@ const leaves = [
 ];
 const leafEncoding = ["bytes"];
 
-console.log(`Proving leaf ${leafNumber} of ${leaves.length}\n`);
+console.log(`Proving leaf ${leafIndex} of ${leaves.length}\n`);
 
 console.log("Optimised Merkle tree:");
-printTestData(StandardMerkleTree.of(leaves, leafEncoding), leafNumber);
+printTestData(StandardMerkleTree.of(leaves, leafEncoding), leafIndex);
 console.log();
 console.log("Unoptimised Merkle tree");
-printTestData(NoSortMerkleTree.of(leaves, leafEncoding), leafNumber);
+printTestData(NoSortMerkleTree.of(leaves, leafEncoding), leafIndex);
 
 function printTestData<T extends unknown[]>(
   tree: StandardMerkleTree<T>,
-  leafIndex: number
+  leafInd: number
 ) {
   console.log(`Root: ${tree.root}`);
 
   const treeData = tree.dump();
-  const leaf = treeData.values.find((v) => v.value === leaves[leafIndex]);
+  const leaf = treeData.values.find((v) => v.value === leaves[leafInd]);
   if (!leaf) {
     console.log("No matching leaf found");
     return;
@@ -59,7 +59,7 @@ function printTestData<T extends unknown[]>(
     console.log(`Leaf: ${leafHash.index}) ${leafHash.hash.slice(2)}`);
   }
 
-  const proof = tree.getProof(leafIndex);
+  const proof = tree.getProof(leafInd);
   console.log(
     `Merkle Proof: ${prettier.format(
       JSON.stringify(proof.map((p) => p.slice(2))),

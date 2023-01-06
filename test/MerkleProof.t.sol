@@ -8,7 +8,7 @@ import {MerkleProof as OpenZeppelinMerkleProof} from "openzeppelin/utils/cryptog
 // import {OptimisedMerkleProof as OpenZeppelinMerkleProof} from "src/OptimisedMerkleProof.sol";
 
 contract MerkleProofTest is Test {
-    uint256 leafToProve = 12;
+    uint256 leafIndex = 12;
     bytes[] leaves = [
         bytes(hex"0000000000000000000000000000000000000000000000000000000000000000"),
         bytes(hex"0000000000000000000000000000000000000000000000000000000000000001"),
@@ -32,7 +32,7 @@ contract MerkleProofTest is Test {
 
     function testUnoptimisedProofLengthIndex() external {
         bytes32 expectedRoot = hex"89e05033b83bbcd26574a13c72f57f63174870e598e982236a31cc70b08c32dc";
-        bytes32 hashedLeaf = hashLeaf(leaves[leafToProve]);
+        bytes32 hashedLeaf = hashLeaf(leaves[leafIndex]);
 
         bytes32[] memory proof = new bytes32[](4);
         proof[0] = bytes32(
@@ -51,7 +51,7 @@ contract MerkleProofTest is Test {
         bytes32 computedRoot = SnowbridgeMerkleProof
             .computeRootFromProofAtPosition(
                 hashedLeaf,
-                leafToProve,
+                leafIndex,
                 leaves.length,
                 proof
             );
@@ -61,7 +61,7 @@ contract MerkleProofTest is Test {
 
     function testUnoptimisedProofSidesArray() external {
         bytes32 expectedRoot = hex"89e05033b83bbcd26574a13c72f57f63174870e598e982236a31cc70b08c32dc";
-        bytes32 hashedLeaf = hashLeaf(leaves[leafToProve]);
+        bytes32 hashedLeaf = hashLeaf(leaves[leafIndex]);
 
         bytes32[] memory proof = new bytes32[](4);
         proof[0] = bytes32(
@@ -91,6 +91,7 @@ contract MerkleProofTest is Test {
 
     function testOptimisedProof() external {
         bytes32 expectedRoot = hex"df074105270e8147f6be169cbcead1467648cb88b28b2ce50980a95ca9a76728";
+        bytes32 hashedLeaf = hashLeaf(leaves[leafIndex]);
 
         bytes32[] memory proof = new bytes32[](4);
         proof[0] = bytes32(
@@ -105,8 +106,6 @@ contract MerkleProofTest is Test {
         proof[3] = bytes32(
             hex"5ca62c8f5e9c77e8e1b99bf85960e378830dd052533f2de017292333dc04ca6e"
         );
-
-        bytes32 hashedLeaf = hashLeaf(leaves[leafToProve]);
 
         bytes32 computedRoot = OpenZeppelinMerkleProof.processProof(
             proof,
