@@ -6,6 +6,7 @@ import { keccak256 } from "ethereum-cryptography/keccak";
 import {
   bytesToHex,
   concatBytes,
+  // Only used in removed validation function processProof
   // equalsBytes,
   hexToBytes,
 } from "ethereum-cryptography/utils";

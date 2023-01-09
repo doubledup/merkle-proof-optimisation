@@ -1,7 +1,5 @@
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import prettier from "prettier";
-import { defaultAbiCoder } from "@ethersproject/abi";
-import { doubleHash } from "./no-sort";
 import { NoSortMerkleTree } from "./no-sort";
 
 const leafIndex = 12;
@@ -28,17 +26,26 @@ const leafEncoding = ["bytes"];
 
 console.log(`Proving leaf ${leafIndex} of ${leaves.length}\n`);
 
-console.log("Optimised Merkle tree:");
-printTestData(StandardMerkleTree.of(leaves, leafEncoding), leafIndex);
+console.log(`leafIndex: ${leafIndex}`);
+const formattedLeaves = leaves
+  .map((leaf) => `    ${leafEncoding[0]}(hex"${(leaf[0] ?? "no leaf").slice(2)}"),`)
+  .join("\n");
+console.log(
+  `leaves: \n[\n${formattedLeaves.slice(0, formattedLeaves.length - 1)}\n]`
+);
 console.log();
-console.log("Unoptimised Merkle tree");
+
+console.log("Unoptimised proof:");
 printTestData(NoSortMerkleTree.of(leaves, leafEncoding), leafIndex);
+console.log();
+console.log("Optimised proof:");
+printTestData(StandardMerkleTree.of(leaves, leafEncoding), leafIndex);
 
 function printTestData<T extends unknown[]>(
   tree: StandardMerkleTree<T>,
   leafInd: number
 ) {
-  console.log(`Root: ${tree.root}`);
+  console.log(`expectedRoot: hex"${tree.root.slice(2)}"`);
 
   const treeData = tree.dump();
   const leaf = treeData.values.find((v) => v.value === leaves[leafInd]);
@@ -46,38 +53,41 @@ function printTestData<T extends unknown[]>(
     console.log("No matching leaf found");
     return;
   } else {
-    const leafHash = {
-      index: leaf.treeIndex,
-      hash: treeData.tree[leaf.treeIndex] ?? "no hash found",
-    };
-
-    console.log(`Raw leaf: ${JSON.stringify(leaf.value)}`);
-    const encodedLeaf = defaultAbiCoder.encode(leafEncoding, leaf.value);
-    console.log(`Encoded leaf: ${encodedLeaf}`);
-    console.log(`Hashed leaf: ${doubleHash(encodedLeaf)}`);
-
-    console.log(`Leaf: ${leafHash.index}) ${leafHash.hash.slice(2)}`);
+    // Uncomment this and move the imports to the top to show the intermediate values when hashing a leaf
+    // import { defaultAbiCoder } from "@ethersproject/abi";
+    // import { doubleHash } from "./no-sort";
+    // console.log(`Raw leaf: ${JSON.stringify(leaf.value)}`);
+    // const encodedLeaf = defaultAbiCoder.encode(leafEncoding, leaf.value);
+    // console.log(`Encoded leaf: ${encodedLeaf}`);
+    // console.log(`Hashed leaf: ${doubleHash(encodedLeaf)}`);
+    //
+    // Uncomment this to show the leaf's tree index & hash
+    // const leafHash = {
+    //   index: leaf.treeIndex,
+    //   hash: treeData.tree[leaf.treeIndex] ?? "no hash found",
+    // };
+    // console.log(
+    //   `Leaf (tree index ${leafHash.index}): ${leafHash.hash.slice(2)}`
+    // );
   }
 
   const proof = tree.getProof(leafInd);
   console.log(
-    `Merkle Proof: ${prettier.format(
-      JSON.stringify(proof.map((p) => p.slice(2))),
-      {
-        parser: "json",
-      }
-    )}`.trim()
+    `proof: ${prettier.format(JSON.stringify(proof.map((p) => p.slice(2))), {
+      parser: "json",
+    })}`.trim()
   );
 
   console.log(
-    `Hash sides (for unoptimised proof): ${JSON.stringify(
+    `hashSides (for unoptimised proof): ${JSON.stringify(
       hashSides(leaf.treeIndex, leaves.length)
-    )}`
+    ).trim()}`
   );
 
-  console.log(`Tree:\n${tree.render()}`.trim());
+  // // Uncomment this to show the Merkle tree structure
+  // console.log(`Tree:\n${tree.render()}`.trim());
 
-  // // Uncomment this to see the leaf hashes in original order
+  // // Uncomment this to show the leaf hashes in original order
   // const leafHashes = treeData.values.map((v) => treeData.tree[v.treeIndex]);
   // console.log(
   //   `Leaves: ${prettier.format(JSON.stringify(leafHashes), {
@@ -85,7 +95,7 @@ function printTestData<T extends unknown[]>(
   //   })}`.trim()
   // );
 
-  // // Uncomment this to see the full StandardMerkleTree
+  // // Uncomment this to show the full StandardMerkleTree
   // console.log(
   //   `Tree dump: ${prettier.format(JSON.stringify(treeData), {
   //     parser: "json",
@@ -106,7 +116,8 @@ function hashSides(index: number, width: number): boolean[] {
     [index]
   );
 
-  console.log(`Tree indices for hashSides: ${JSON.stringify(indices)}`);
+  // Uncomment this to show the tree index for each intermediate hash, starting with the leaf
+  // console.log(`Tree indices for hashSides: ${JSON.stringify(indices)}`);
 
   // true when proof hash is on the left, so the accumulated hash is on the right
   // right children have an even index in the tree
