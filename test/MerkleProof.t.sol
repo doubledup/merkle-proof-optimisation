@@ -8,7 +8,7 @@ import {MerkleProof as OpenZeppelinMerkleProof} from "openzeppelin/utils/cryptog
 // import {OptimisedMerkleProof as OpenZeppelinMerkleProof} from "src/OptimisedMerkleProof.sol";
 
 contract MerkleProofTest is Test {
-    uint256 leafIndex = 12;
+    uint256 leafIndex = 3;
     bytes[] leaves = [
         bytes(hex"0000000000000000000000000000000000000000000000000000000000000000"),
         bytes(hex"0000000000000000000000000000000000000000000000000000000000000001"),
@@ -25,26 +25,33 @@ contract MerkleProofTest is Test {
         bytes(hex"0000000000000000000000000000000000000000000000000000000000000012"),
         bytes(hex"0000000000000000000000000000000000000000000000000000000000000013"),
         bytes(hex"0000000000000000000000000000000000000000000000000000000000000014"),
-        bytes(hex"0000000000000000000000000000000000000000000000000000000000000015")
+        bytes(hex"0000000000000000000000000000000000000000000000000000000000000015"),
+        bytes(hex"0000000000000000000000000000000000000000000000000000000000000016"),
+        bytes(hex"0000000000000000000000000000000000000000000000000000000000000017"),
+        bytes(hex"0000000000000000000000000000000000000000000000000000000000000018"),
+        bytes(hex"0000000000000000000000000000000000000000000000000000000000000019")
     ];
 
     function setUp() external {}
 
     function testUnoptimisedProofLengthIndex() external {
-        bytes32 expectedRoot = hex"89e05033b83bbcd26574a13c72f57f63174870e598e982236a31cc70b08c32dc";
+        bytes32 expectedRoot = hex"18bbfdde0b580e2bbe3d45449000b98b7e98f66fc58f187ade7de5343eb3a15c";
 
-        bytes32[] memory proof = new bytes32[](4);
+        bytes32[] memory proof = new bytes32[](5);
         proof[0] = bytes32(
-            hex"d255520a2445a6225c516a8607cbda7359210115131577170448c9deb235206a"
+            hex"58e9a6ca105dd9ed36c41988e9cf55b722660d6b76f83ebc322fecc94477b2ab"
         );
         proof[1] = bytes32(
-            hex"506b310f1fda68eae42eabe909a3cdf1c796b3f6d6d0955fc466d274e4731c7a"
+            hex"b9ea4098a5754a60725baf50899ccd2e84f4e9cd26c6ee5f8df8e164e6dffa09"
         );
         proof[2] = bytes32(
-            hex"df340c91de0b21ac6130307f468b025f0a665789dd7e8f586096566c387e8131"
+            hex"5c2ad896a3f86e0d3391c5c2ab35e31d6dc16f8843bcdb8bb77d93b733612a18"
         );
         proof[3] = bytes32(
-            hex"cbacfce1c89d6b660bc9aee56149f446a623db095ceb54d269748e3f331462d7"
+            hex"df340c91de0b21ac6130307f468b025f0a665789dd7e8f586096566c387e8131"
+        );
+        proof[4] = bytes32(
+            hex"f50a7b2cd8561cab32e7f43f50c64e9ad3838c2c25e45e61e6cf00a434270580"
         );
 
         bytes32 hashedLeaf = hashLeaf(leaves[leafIndex]);
@@ -61,27 +68,31 @@ contract MerkleProofTest is Test {
     }
 
     function testUnoptimisedProofSidesArray() external {
-        bytes32 expectedRoot = hex"89e05033b83bbcd26574a13c72f57f63174870e598e982236a31cc70b08c32dc";
+        bytes32 expectedRoot = hex"18bbfdde0b580e2bbe3d45449000b98b7e98f66fc58f187ade7de5343eb3a15c";
 
-        bytes32[] memory proof = new bytes32[](4);
+        bytes32[] memory proof = new bytes32[](5);
         proof[0] = bytes32(
-            hex"d255520a2445a6225c516a8607cbda7359210115131577170448c9deb235206a"
+            hex"58e9a6ca105dd9ed36c41988e9cf55b722660d6b76f83ebc322fecc94477b2ab"
         );
         proof[1] = bytes32(
-            hex"506b310f1fda68eae42eabe909a3cdf1c796b3f6d6d0955fc466d274e4731c7a"
+            hex"b9ea4098a5754a60725baf50899ccd2e84f4e9cd26c6ee5f8df8e164e6dffa09"
         );
         proof[2] = bytes32(
-            hex"df340c91de0b21ac6130307f468b025f0a665789dd7e8f586096566c387e8131"
+            hex"5c2ad896a3f86e0d3391c5c2ab35e31d6dc16f8843bcdb8bb77d93b733612a18"
         );
         proof[3] = bytes32(
-            hex"cbacfce1c89d6b660bc9aee56149f446a623db095ceb54d269748e3f331462d7"
+            hex"df340c91de0b21ac6130307f468b025f0a665789dd7e8f586096566c387e8131"
+        );
+        proof[4] = bytes32(
+            hex"f50a7b2cd8561cab32e7f43f50c64e9ad3838c2c25e45e61e6cf00a434270580"
         );
 
         bool[] memory hashSides = new bool[](7);
-        hashSides[0] = false;
-        hashSides[1] = false;
-        hashSides[2] = true;
-        hashSides[3] = true;
+        hashSides[0] = true;
+        hashSides[1] = true;
+        hashSides[2] = false;
+        hashSides[3] = false;
+        hashSides[4] = false;
 
         bytes32 hashedLeaf = hashLeaf(leaves[leafIndex]);
 
@@ -92,20 +103,20 @@ contract MerkleProofTest is Test {
     }
 
     function testOptimisedProof() external {
-        bytes32 expectedRoot = hex"df074105270e8147f6be169cbcead1467648cb88b28b2ce50980a95ca9a76728";
+        bytes32 expectedRoot = hex"b08ed46dee2199775e04c69dc62b43614b404d05cf09b83bd064e6594d0715e9";
 
         bytes32[] memory proof = new bytes32[](4);
         proof[0] = bytes32(
-            hex"d255520a2445a6225c516a8607cbda7359210115131577170448c9deb235206a"
+            hex"75b9ce82e2f316dd49c7fc23ba632b1b06c2eb9b40e86abb6fa4ba3b940dbf4b"
         );
         proof[1] = bytes32(
-            hex"85bd40c5b4ca17772657807ac3722be7d49c2e6dbc50b9f25cd9a028bf6f4bed"
+            hex"3e8fda3dd4a61ef41110c4b250cdf7ac07717402207d418a36a2bc5c511daebf"
         );
         proof[2] = bytes32(
-            hex"9d5922d3886daa7e6561934906922a10a0df6faa66fd3ca553e795edd7c72006"
+            hex"52f43dcfa7482ed14dea86ede03ab138ebc7125eb97525b09f4715b615da18cf"
         );
         proof[3] = bytes32(
-            hex"5ca62c8f5e9c77e8e1b99bf85960e378830dd052533f2de017292333dc04ca6e"
+            hex"5642a45a5810d90f9aadaceeb5bd365b791fd637d0f986b6d19869f2d616a859"
         );
 
         bytes32 hashedLeaf = hashLeaf(leaves[leafIndex]);
